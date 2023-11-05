@@ -2,7 +2,7 @@ use super::common;
 use super::CommandContext;
 use super::CommandResult;
 
-/// Invite Lute to the voice channel
+/// Ask Lute to play a song
 #[poise::command(slash_command, rename = "play")]
 pub async fn command(ctx: CommandContext<'_>, uri: String) -> CommandResult<()> {
     ctx.defer().await?;

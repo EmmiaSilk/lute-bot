@@ -12,6 +12,7 @@ use tokio::sync::Mutex;
 use super::CommandContext;
 use super::CommandResult;
 
+use crate::error;
 use crate::error::IllegalFilePathError;
 use crate::error::NoSongbirdError;
 use crate::error::NoVoiceChannelIdError;
@@ -60,8 +61,6 @@ pub async fn leave_channel(
 
     songbird_manager.leave(guild_id).await?;
 
-    // TODO: Remove from channel even if the bot shut down with her in the call.
-
     Ok(guild_id)
 }
 
@@ -77,11 +76,7 @@ pub async fn retrieve_source(ctx: &CommandContext<'_>, uri: String) -> CommandRe
     // Online paths
     let source: Input;
     if uri.starts_with("http://") || uri.starts_with("https://") {
-        ctx.say(format!("SONG: {}", uri)).await?;
-        // source = songbird::ytdl(uri).await?.into();
-        source = Restartable::ytdl(uri, true)
-            .await?
-            .into();
+        source = songbird::input::ytdl(uri).await?;
     }
     else {
         // Relative Paths
